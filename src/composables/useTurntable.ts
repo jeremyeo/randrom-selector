@@ -19,7 +19,8 @@ export function useTurntable(id: string) {
       canvasEl.boundingClientRect((info) => {
         const { width, height } = info as UniApp.NodeInfo
         if (!turntable.value) return
-        turntable.value.setSize(width!, height!)
+        const dpr = uni.getSystemInfoSync().pixelRatio
+        turntable.value.setSize(width!, height!, dpr)
         notify()
       }).exec()
     })

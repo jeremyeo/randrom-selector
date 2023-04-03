@@ -4,6 +4,7 @@ import { getRandomColors, presetColors } from '@/utils/gencolors'
 import { angleToRadian, getPointOnCircle, shortenDistance } from '@/utils/calculation'
 
 export class Turntable {
+  private dpr = 1
   private handColor = 'red'
   private options: string[] = []
   colors: string[] = []
@@ -19,11 +20,11 @@ export class Turntable {
   }
 
   private get center() {
-    return { x: this.canvas.width / 2, y: this.canvas.height / 2 }
+    return { x: this.canvas.width / this.dpr / 2, y: this.canvas.height / this.dpr / 2 }
   }
 
   private get turntableRadius() {
-    return Math.min(this.canvas.width * 0.4, this.canvas.height * 0.4)
+    return Math.min(this.canvas.width / this.dpr * 0.4, this.canvas.height / this.dpr * 0.4)
   }
 
   private get handRadius() {
@@ -49,9 +50,11 @@ export class Turntable {
     this.ctx.restore()
   }
 
-  setSize(width: number, height: number) {
-    this.canvas.width = width
-    this.canvas.height = height
+  setSize(width: number, height: number, dpr = 1) {
+    this.dpr = dpr
+    this.canvas.width = width * dpr
+    this.canvas.height = height * dpr
+    this.ctx.scale(dpr, dpr)
   }
 
   setOptions(options: string[]) {
@@ -278,7 +281,7 @@ export class Turntable {
 
   private drawText(text: string, angle: number) {
     this.keepDraw(() => {
-      this.ctx.font = '12px -apple-system, BlinkMacSystemFont, "PingFang SC","Helvetica Neue",STHeiti,"Microsoft Yahei",Tahoma,Simsun,sans-serif bold'
+      this.ctx.font = `${12}px -apple-system, BlinkMacSystemFont, "PingFang SC","Helvetica Neue",STHeiti,"Microsoft Yahei",Tahoma,Simsun,sans-serif bold`
       this.ctx.textAlign = 'center'
       this.ctx.textBaseline = 'middle'
       this.ctx.fillStyle = 'rgba(0,0,0,0.2)'
