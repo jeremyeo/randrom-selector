@@ -6,16 +6,26 @@ import ECard from '@/components/ECard.vue'
 import useColors from '@/composables/useColors'
 import { useTemplateStore } from '@/stores/template'
 
-uni.setNavigationBarColor({
-  frontColor: '#ffffff',
-  backgroundColor: '#181818',
-})
-
 const { turntable, onInit } = useTurntable('canvas')
 const template = useTemplateStore()
 const options = computed(() => template.current?.options || [])
 const result = ref(-1)
 const { resultText, currentColor, darkenedColor, boxShadow } = useColors(turntable, options, result)
+const state = ref<'wait' | 'running' | 'ended'>('wait')
+const animate = computed(() => {
+  if (state.value === 'wait') {
+    return ['animate-mybounce', 'animate-duration-1500']
+  }
+  else if (state.value === 'ended') {
+    return ['animate-fade-in', 'animate-mode-forwards', 'animate-duration-1500']
+  }
+  else if (state.value === 'running') {
+    return ['animate-fade-out', 'animate-mode-forwards']
+  }
+  else {
+    return []
+  }
+})
 
 // 胶囊按钮信息
 const menuButtonInfo = uni.getMenuButtonBoundingClientRect()
@@ -39,7 +49,9 @@ watch(options, redraw, { deep: true })
 
 async function start() {
   if (options.value.length === 0) return uni.showToast({ icon: 'error', title: '请先创建模板～' })
+  state.value = 'running'
   result.value = await turntable.value.start()
+  state.value = 'ended'
 }
 
 function redraw() {
@@ -59,6 +71,11 @@ function changeTemplate() {
   uni.navigateTo({
     url: '/pages/template/index',
   })
+}
+
+function handleAnimate({ detail }: { detail: AnimationEvent }) {
+  if (state.value === 'ended' && detail.animationName === 'fade-in')
+    state.value = 'wait'
 }
 </script>
 
@@ -82,7 +99,12 @@ function changeTemplate() {
     </view>
     <canvas id="canvas" flex-1 w-full type="2d" />
     <ECard flex-shrink-0 mx-xl :box-shadow="boxShadow">
-      <view text="white/10 center" transition-all-750 ease-in text-xl mb-md font-bold :style="{ color: currentColor }">
+      <view
+        text="white/10 center" :class="animate"
+        transition-all-750 ease-in text-xl mb-md font-bold
+        :style="{ color: currentColor }"
+        @animationend="e => handleAnimate(e as any)"
+      >
         {{ resultText }}
       </view>
 

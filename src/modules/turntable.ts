@@ -67,7 +67,7 @@ export class Turntable {
 
   draw() {
     if (this.options.length === 0) return
-    this.updateColors()
+    if (this.colors.length === 0) this.updateColors()
     this.keepDraw(() => {
       this.ctx.translate(this.center.x, this.center.y)
       this.drawTurntableBg()
