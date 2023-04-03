@@ -1,7 +1,7 @@
 import TWEEN from '@tweenjs/tween.js'
 import { splitStringBySize } from '@/utils/common'
 import { getRandomColors, presetColors } from '@/utils/gencolors'
-import { angleToRadian, getPointOnCircle, shortenDistance } from '@/utils/calculation'
+import { angleToRadian, getPointOnCircle } from '@/utils/calculation'
 
 export class Turntable {
   private dpr = 1
@@ -173,6 +173,7 @@ export class Turntable {
     const endPoint = calcPoint(endAngle)
     const startRad = angleToRadian(startAngle)
 
+    // draw circle shadow
     this.keepDraw(() => {
       // 设置阴影
       this.ctx.shadowOffsetX = 5
@@ -196,7 +197,7 @@ export class Turntable {
       this.ctx.stroke()
     })
 
-    // draw arrow
+    // draw arrow shadow
     this.keepDraw(() => {
       this.ctx.beginPath()
       this.ctx.strokeStyle = this.handColor
@@ -213,6 +214,7 @@ export class Turntable {
       this.ctx.stroke()
     })
 
+    // draw arrow
     this.keepDraw(() => {
       this.ctx.beginPath()
       this.ctx.strokeStyle = this.handColor
@@ -226,22 +228,8 @@ export class Turntable {
 
     // draw patch
     this.keepDraw(() => {
-      this.ctx.beginPath()
-      this.ctx.strokeStyle = 'black' || this.handColor
-      this.ctx.lineWidth = 5
-      this.ctx.moveTo(0, 0)
-      const newStart = shortenDistance(this.center, startPoint, 1)
-      const newEnd = shortenDistance(this.center, endPoint, 1)
-      this.ctx.lineTo(newStart.x, newStart.y)
-      this.ctx.moveTo(0, 0)
-      this.ctx.lineTo(newEnd.x, newEnd.y)
-      this.ctx.rect(0, 0, 5, 5)
-      this.ctx.stroke()
-    })
-
-    this.keepDraw(() => {
-      this.ctx.strokeStyle = 'red' || this.handColor
-      this.ctx.fillStyle = 'red' || this.handColor
+      this.ctx.strokeStyle = this.handColor
+      this.ctx.fillStyle = this.handColor
       this.ctx.moveTo(0, 0)
       this.ctx.arc(0, 0, radius, 0, 2 * Math.PI)
       this.ctx.fill()

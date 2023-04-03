@@ -34,6 +34,7 @@ export const useTemplateStore = defineStore('template', () => {
   watch(id, saveCurrentTemplateId)
 
   const current = computed(() => all.value.find(template => template.id === id.value))
+  const options = computed(() => current.value?.options || [])
 
   function add(template: Template) {
     if (all.value.find(t => t.name === template.name))
@@ -59,6 +60,7 @@ export const useTemplateStore = defineStore('template', () => {
   return {
     id,
     all,
+    options,
     current,
     add,
     update,

@@ -8,7 +8,7 @@ interface RouteParams {
 }
 
 interface RouterPushOptions {
-  query: RouteParams
+  query?: RouteParams
 }
 
 function paramsToJson(params: RouteParams) {
@@ -21,7 +21,7 @@ function jsonToParams(json: string) {
 
 export default function useRouter() {
   const currentParams = ref<RouteParams>()
-  function push(url: string, { query }: RouterPushOptions) {
+  function push(url: string, { query = {} }: RouterPushOptions = {}) {
     const json = paramsToJson(query)
     uni.navigateTo({
       url: `/pages${url}?json=${json}`,

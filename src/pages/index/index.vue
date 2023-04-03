@@ -5,77 +5,40 @@ import EButton from '@/components/EButton.vue'
 import ECard from '@/components/ECard.vue'
 import useColors from '@/composables/useColors'
 import { useTemplateStore } from '@/stores/template'
+import useCustomNav from '@/composables/useCustomNav'
+import useAnimate from '@/composables/useAnimate'
+import useRouter from '@/composables/useRouter'
 
-const { turntable, onInit } = useTurntable('canvas')
-const template = useTemplateStore()
-const options = computed(() => template.current?.options || [])
 const result = ref(-1)
-const { resultText, currentColor, darkenedColor, boxShadow } = useColors(turntable, options, result)
-const state = ref<'wait' | 'running' | 'ended'>('wait')
-const animate = computed(() => {
-  if (state.value === 'wait') {
-    return ['animate-mybounce', 'animate-duration-1500']
-  }
-  else if (state.value === 'ended') {
-    return ['animate-fade-in', 'animate-mode-forwards', 'animate-duration-1500']
-  }
-  else if (state.value === 'running') {
-    return ['animate-fade-out', 'animate-mode-forwards']
-  }
-  else {
-    return []
-  }
-})
-
-// 胶囊按钮信息
-const menuButtonInfo = uni.getMenuButtonBoundingClientRect()
-// 手机信息
-const mobileInfo = uni.getSystemInfoSync()
-
-const statusHeight = `${mobileInfo.statusBarHeight!}px`
-// 按钮与手机状态栏之间的间隙： 对应图中3
-const buttonMaginTopBottom = menuButtonInfo.top - mobileInfo.statusBarHeight!
-// 包含分享按钮的容器高度：图中蓝色区域部分
-const buttonHeight = `${menuButtonInfo.height + 2 + buttonMaginTopBottom * 2}px`
+const router = useRouter()
+const template = useTemplateStore()
 
 const originTitle = 'N决定大转盘'
 const title = computed(() => template.current ? `${originTitle}之${template.current?.name}` : originTitle)
 
-onInit(() => {
-  redraw()
-})
+// init canvas and draw
+const { turntable, onInit } = useTurntable('canvas')
+onInit(redraw)
+watch(() => template.options, redraw)
 
-watch(options, redraw, { deep: true })
+const { statusHeight, buttonHeight, buttonInfo } = useCustomNav()
+const { resultText, currentColor, darkenedColor, boxShadow, updateColors } = useColors(turntable, result)
+const { state, animate, handleAnimationend } = useAnimate()
 
 async function start() {
-  if (options.value.length === 0) return uni.showToast({ icon: 'error', title: '请先创建模板～' })
+  if (template.options.length === 0) return uni.showToast({ icon: 'error', title: '请先创建模板～' })
   state.value = 'running'
   result.value = await turntable.value.start()
   state.value = 'ended'
 }
 
 function redraw() {
-  turntable.value.setOptions(options.value)
+  turntable.value.setOptions(template.options)
   turntable.value.draw()
-}
-
-function changeColors() {
-  turntable.value.updateColors()
-  turntable.value.draw()
-  const now = result.value
-  result.value = -1
-  result.value = now
 }
 
 function changeTemplate() {
-  uni.navigateTo({
-    url: '/pages/template/index',
-  })
-}
-
-function handleAnimate({ detail }: { detail: AnimationEvent }) {
-  if (state.value === 'ended' && detail.animationName === 'fade-in')
-    state.value = 'wait'
+  router.push('/template/index')
 }
 </script>
 
@@ -87,13 +50,13 @@ function handleAnimate({ detail }: { detail: AnimationEvent }) {
     <view :style="{ height: statusHeight }" />
     <view
       transition-all-750 ease-in
+      text="center white" truncate
       :style="{
         height: buttonHeight,
         lineHeight: buttonHeight,
-        padding: `0 calc(100% - ${menuButtonInfo.left}px)`,
+        padding: `0 calc(100% - ${buttonInfo.left}px)`,
         color: currentColor,
       }"
-      text="center white" truncate
     >
       {{ title }}
     </view>
@@ -103,7 +66,7 @@ function handleAnimate({ detail }: { detail: AnimationEvent }) {
         text="white/10 center" :class="animate"
         transition-all-750 ease-in text-xl mb-md font-bold
         :style="{ color: currentColor }"
-        @animationend="e => handleAnimate(e as any)"
+        @animationend="e => handleAnimationend(e as any)"
       >
         {{ resultText }}
       </view>
@@ -113,7 +76,7 @@ function handleAnimate({ detail }: { detail: AnimationEvent }) {
           决定转转
         </EButton>
 
-        <EButton @click="changeColors">
+        <EButton @click="updateColors">
           随机颜色
         </EButton>
 
