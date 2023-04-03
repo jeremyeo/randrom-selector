@@ -6,7 +6,7 @@ import { angleToRadian, getPointOnCircle, shortenDistance } from '@/utils/calcul
 export class Turntable {
   private handColor = 'red'
   private options: string[] = []
-  private colors: string[] = []
+  colors: string[] = []
   private currentAngle = 0
   private duration = 3000
 
@@ -23,11 +23,11 @@ export class Turntable {
   }
 
   private get turntableRadius() {
-    return this.canvas.width * 0.4
+    return Math.min(this.canvas.width * 0.4, this.canvas.height * 0.4)
   }
 
   private get handRadius() {
-    return this.canvas.width * 0.2
+    return this.turntableRadius * 0.35
   }
 
   private get handProp() {
@@ -55,7 +55,7 @@ export class Turntable {
   }
 
   setOptions(options: string[]) {
-    this.options = [...new Set(this.options.concat(options))]
+    this.options = [...new Set(options)]
   }
 
   updateColors() {
@@ -77,6 +77,7 @@ export class Turntable {
   }
 
   async start(duration = 0): Promise<number> {
+    if (this.options.length === 0) return -1
     if (duration > 0) this.duration = duration
     const rotationAngle = this.currentAngle + Math.floor(Math.random() * (3600 - 360 + 1)) + 360 * 5
     const index = this.calcFinalIndex(rotationAngle)
@@ -245,38 +246,6 @@ export class Turntable {
     })
   }
 
-  private drawText(text: string, angle: number) {
-    this.keepDraw(() => {
-      this.ctx.font = '12px Arial'
-      this.ctx.textAlign = 'center'
-      this.ctx.textBaseline = 'middle'
-      this.ctx.fillStyle = 'white'
-
-      // 行间距
-      const lineHeight = 2
-      // 扇形中间的宽度
-      const maxTextWidth = this.turntableRadius / 2 * angleToRadian(this.baseAngle) * 0.8
-
-      const textWidth = this.ctx.measureText(text).width
-      // 文字高度加上行间距
-      const unitHeight = parseInt(this.ctx.font) + lineHeight
-      const unitWidth = textWidth / text.length
-      const groupNum = Math.floor(maxTextWidth / unitWidth)
-
-      const texts = splitStringBySize(text, groupNum)
-      // 计算总文字高度
-      const totalTextHeight = texts.length * unitHeight
-
-      this.ctx.translate(0, 0)
-      this.ctx.rotate(angleToRadian(270 + angle))
-
-      texts.forEach((text, index) => {
-        const textHeight = unitHeight * (index + 1)
-        this.ctx.fillText(text, 0, this.turntableRadius / 2 + textHeight - totalTextHeight / 2 + 10)
-      })
-    })
-  }
-
   private drawTurntable() {
     const arcs: Array<() => void> = []
     const texts: Array<() => void> = []
@@ -305,5 +274,37 @@ export class Turntable {
 
     arcs.forEach(draw => draw())
     texts.forEach(draw => draw())
+  }
+
+  private drawText(text: string, angle: number) {
+    this.keepDraw(() => {
+      this.ctx.font = '12px -apple-system, BlinkMacSystemFont, "PingFang SC","Helvetica Neue",STHeiti,"Microsoft Yahei",Tahoma,Simsun,sans-serif bold'
+      this.ctx.textAlign = 'center'
+      this.ctx.textBaseline = 'middle'
+      this.ctx.fillStyle = 'rgba(0,0,0,0.2)'
+
+      // 行间距
+      const lineHeight = 2
+      // 扇形中间的宽度
+      const maxTextWidth = this.turntableRadius / 2 * angleToRadian(this.baseAngle) * 0.8
+
+      const textWidth = this.ctx.measureText(text).width
+      // 文字高度加上行间距
+      const unitHeight = parseInt(this.ctx.font) + lineHeight
+      const unitWidth = textWidth / text.length
+      const groupNum = Math.floor(maxTextWidth / unitWidth)
+
+      const texts = splitStringBySize(text, groupNum)
+      // 计算总文字高度
+      const totalTextHeight = texts.length * unitHeight
+
+      this.ctx.translate(0, 0)
+      this.ctx.rotate(angleToRadian(270 + angle))
+
+      texts.forEach((text, index) => {
+        const textHeight = unitHeight * (index + 1)
+        this.ctx.fillText(text, 0, this.turntableRadius / 2 + textHeight - totalTextHeight / 2 + 10)
+      })
+    })
   }
 }

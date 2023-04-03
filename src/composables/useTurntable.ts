@@ -3,27 +3,33 @@ import { onReady } from '@dcloudio/uni-app'
 import type { ShallowRef } from 'vue'
 import { Turntable } from '@/modules/turntable'
 
+const turntable = shallowRef<Turntable>()
+
 export function useTurntable(id: string) {
   const subscribers = new Set<() => void>()
-  const turntable = shallowRef<Turntable>()
-  onReady(() => {
-    const selector = uni.createSelectorQuery().in(getCurrentInstance())
-    const canvasEl = selector.select(`#${id}`)
-    canvasEl.node(({ node: canvas }) => {
-      turntable.value = new Turntable(canvas)
-    }).exec()
+  turntable.value
+    ? notify()
+    : onReady(() => {
+      const selector = uni.createSelectorQuery().in(getCurrentInstance())
+      const canvasEl = selector.select(`#${id}`)
+      canvasEl.node(({ node: canvas }) => {
+        turntable.value = new Turntable(canvas)
+      }).exec()
 
-    canvasEl.boundingClientRect((info) => {
-      const { width, height } = info as UniApp.NodeInfo
-      if (!turntable.value) return
-      turntable.value.setSize(width!, height!)
+      canvasEl.boundingClientRect((info) => {
+        const { width, height } = info as UniApp.NodeInfo
+        if (!turntable.value) return
+        turntable.value.setSize(width!, height!)
+        notify()
+      }).exec()
+    })
 
-      subscribers.forEach((subscriber) => {
-        subscriber()
-      })
-      subscribers.clear()
-    }).exec()
-  })
+  function notify() {
+    subscribers.forEach((subscriber) => {
+      subscriber()
+    })
+    subscribers.clear()
+  }
 
   function onInit(fn: () => void) {
     subscribers.add(fn)
