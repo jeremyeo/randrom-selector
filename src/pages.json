@@ -7,8 +7,6 @@
   ],
   "globalStyle": {
     "navigationBarTextStyle": "white",
-    "navigationBarTitleText": "N决定大转盘",
-    "navigationBarBackgroundColor": "#181818",
-    "backgroundColor": "#181818"
+    "navigationBarTitleText": "N决定大转盘"
   }
 }

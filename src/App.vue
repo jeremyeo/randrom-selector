@@ -16,6 +16,6 @@ onHide(() => {
 <style>
 page, view, text, button {
   font-size: 32rpx;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.8);
 }
 </style>

@@ -27,7 +27,7 @@ export default defineConfig({
   rules: [
     ['page', {
       'padding-bottom': 'max(env(safe-area-inset-bottom), 48rpx)',
-      'background-color': '#181818',
+      'background-color': 'black',
       'box-sizing': 'border-box',
       'overflow': 'auto',
       'height': '100vh',

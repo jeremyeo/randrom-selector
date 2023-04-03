@@ -269,11 +269,6 @@ export class Turntable {
 
   private drawText(text: string, angle: number) {
     this.keepDraw(() => {
-      this.ctx.font = `${12}px -apple-system, BlinkMacSystemFont, "PingFang SC","Helvetica Neue",STHeiti,"Microsoft Yahei",Tahoma,Simsun,sans-serif bold`
-      this.ctx.textAlign = 'center'
-      this.ctx.textBaseline = 'middle'
-      this.ctx.fillStyle = 'rgba(0,0,0,0.2)'
-
       // 行间距
       const lineHeight = 2
       // 扇形中间的宽度
@@ -292,6 +287,10 @@ export class Turntable {
       this.ctx.translate(0, 0)
       this.ctx.rotate(angleToRadian(270 + angle))
 
+      this.ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", STHeiti, "Microsoft Yahei", Tahoma, Simsun, sans-serif'
+      this.ctx.textAlign = 'center'
+      this.ctx.textBaseline = 'middle'
+      this.ctx.fillStyle = 'rgba(0,0,0,0.2)'
       texts.forEach((text, index) => {
         const textHeight = unitHeight * (index + 1)
         this.ctx.fillText(text, 0, this.turntableRadius / 2 + textHeight - totalTextHeight / 2 + 10)

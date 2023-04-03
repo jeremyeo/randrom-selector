@@ -1,7 +1,11 @@
 <script setup lang="ts">
-defineProps<{
-  boxShadow?: string
-}>()
+withDefaults(defineProps<{
+  borderColor?: string
+  backgroundColor?: string
+}>(), {
+  backgroundColor: 'rgba(51, 51, 51, 0.5)',
+  borderColor: '#333333',
+})
 
 defineEmits<{
   (e: 'click'): void
@@ -11,9 +15,9 @@ defineEmits<{
 <template>
   <view w-full box-border @click="$emit('click')">
     <view
-      shadow-md transition-all-750 ease-in text="white/50"
-      flex-shrink-0 rd-md p-4 bg="gray-500/5"
-      :style="{ boxShadow }"
+      transition-all-750 ease-in text="white"
+      flex-shrink-0 rd-md p-4 border="~ 1px solid"
+      :style="{ boxShadow: '0 8px 12px rgba(0, 0, 0, 0.4)', borderColor, backgroundColor }"
     >
       <slot />
     </view>

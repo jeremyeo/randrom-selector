@@ -8,6 +8,7 @@ import { useTemplateStore } from '@/stores/template'
 import useCustomNav from '@/composables/useCustomNav'
 import useAnimate from '@/composables/useAnimate'
 import useRouter from '@/composables/useRouter'
+import { darkenColor } from '@/utils/gencolors'
 
 const result = ref(-1)
 const router = useRouter()
@@ -44,7 +45,7 @@ function changeTemplate() {
 
 <template>
   <view
-    page h-full transition-all-750 ease-in bg="#181818" flex="~ col"
+    page h-full transition-all-750 ease-in flex="~ col"
     :style="{ backgroundColor: darkenedColor }"
   >
     <view :style="{ height: statusHeight }" />
@@ -55,32 +56,32 @@ function changeTemplate() {
         height: buttonHeight,
         lineHeight: buttonHeight,
         padding: `0 calc(100% - ${buttonInfo.left}px)`,
-        color: currentColor,
+        color: currentColor ?? 'rgba(255,255,255,0.8)',
       }"
     >
       {{ title }}
     </view>
     <canvas id="canvas" flex-1 w-full type="2d" />
-    <ECard flex-shrink-0 mx-xl :box-shadow="boxShadow">
+    <ECard flex-shrink-0 mx-xl :box-shadow="boxShadow" :border-color="currentColor ? darkenColor(currentColor, 10) : '#333'">
       <view
         text="white/10 center" :class="animate"
         transition-all-750 ease-in text-xl mb-md font-bold
-        :style="{ color: currentColor }"
+        :style="{ color: currentColor ?? 'white' }"
         @animationend="e => handleAnimationend(e as any)"
       >
         {{ resultText }}
       </view>
 
       <view flex="~ col gap-md" :style="{ color: currentColor }">
-        <EButton @click="start">
+        <EButton :background-color="darkenedColor" :border-color="darkenedColor" @click="start">
           决定转转
         </EButton>
 
-        <EButton @click="updateColors">
+        <EButton :background-color="darkenedColor" :border-color="darkenedColor" @click="updateColors">
           随机颜色
         </EButton>
 
-        <EButton @click="changeTemplate">
+        <EButton :background-color="darkenedColor" :border-color="darkenedColor" @click="changeTemplate">
           切换模板
         </EButton>
       </view>
