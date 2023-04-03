@@ -269,31 +269,51 @@ export class Turntable {
 
   private drawText(text: string, angle: number) {
     this.keepDraw(() => {
+      const fontSize = 14
+      this.ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", STHeiti, "Microsoft Yahei", Tahoma, Simsun, sans-serif`
+      this.ctx.textAlign = 'center'
+      this.ctx.textBaseline = 'middle'
+      this.ctx.fillStyle = 'rgba(0,0,0,0.2)'
       // 行间距
       const lineHeight = 2
       // 扇形中间的宽度
       const maxTextWidth = this.turntableRadius / 2 * angleToRadian(this.baseAngle) * 0.8
 
       const textWidth = this.ctx.measureText(text).width
+
       // 文字高度加上行间距
-      const unitHeight = parseInt(this.ctx.font) + lineHeight
+      const unitHeight = fontSize + lineHeight
       const unitWidth = textWidth / text.length
       const groupNum = Math.floor(maxTextWidth / unitWidth)
 
-      const texts = splitStringBySize(text, groupNum)
+      let texts = splitStringBySize(text, groupNum)
       // 计算总文字高度
-      const totalTextHeight = texts.length * unitHeight
+      let totalTextHeight = texts.length * unitHeight
 
       this.ctx.translate(0, 0)
       this.ctx.rotate(angleToRadian(270 + angle))
 
-      this.ctx.font = 'bold 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", STHeiti, "Microsoft Yahei", Tahoma, Simsun, sans-serif'
-      this.ctx.textAlign = 'center'
-      this.ctx.textBaseline = 'middle'
-      this.ctx.fillStyle = 'rgba(0,0,0,0.2)'
-      texts.forEach((text, index) => {
+      const calcY = (index: number) => {
         const textHeight = unitHeight * (index + 1)
-        this.ctx.fillText(text, 0, this.turntableRadius / 2 + textHeight - totalTextHeight / 2 + 10)
+        return this.turntableRadius / 2 + textHeight - totalTextHeight / 2 + 10
+      }
+
+      const overflow = texts.reduce((pre, _, index) => {
+        const y = calcY(index)
+        if (y > this.turntableRadius || y <= unitHeight * 3) {
+          return pre + 1
+        }
+        else {
+          return pre
+        }
+      }, 0)
+
+      texts = texts.slice(0, texts.length - overflow)
+      totalTextHeight = texts.length * unitHeight
+
+      texts.concat(overflow > 0 ? ['......'] : []).forEach((text, index) => {
+        const y = calcY(index)
+        this.ctx.fillText(text, 0, text === '......' ? y - 8 : y)
       })
     })
   }

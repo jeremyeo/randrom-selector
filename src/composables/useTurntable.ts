@@ -5,11 +5,12 @@ import { Turntable } from '@/modules/turntable'
 
 const turntable = shallowRef<Turntable>()
 
-export function useTurntable(id: string) {
+export function useTurntable(id?: string) {
   const subscribers = new Set<() => void>()
   turntable.value
     ? notify()
     : onReady(() => {
+      if (!id) return
       const selector = uni.createSelectorQuery().in(getCurrentInstance())
       const canvasEl = selector.select(`#${id}`)
       canvasEl.node(({ node: canvas }) => {

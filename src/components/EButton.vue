@@ -10,7 +10,7 @@ withDefaults(defineProps<{
   loading: false,
   openType: '',
   backgroundColor: 'rgba(51,51,51,0.5)',
-  borderColor: '#333',
+  borderColor: '',
 })
 
 defineEmits<{
@@ -24,8 +24,8 @@ defineEmits<{
     :loading="loading"
     :open-type="openType"
     hover-class="button-hover"
-    text="white/80"
-    after:border-none border="~ 1px solid"
+    text="white/70" bg-back
+    after:border-none border="~ 1px solid back"
     :style="{ backgroundColor, borderColor }"
     @click="$emit('click')"
   >

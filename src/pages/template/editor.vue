@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { onLoad } from '@dcloudio/uni-app'
 import { cloneDeep } from 'lodash-es'
-import { nextTick, ref } from 'vue'
+import { ref } from 'vue'
 import EInput from '@/components/EInput.vue'
 import useRouter from '@/composables/useRouter'
 import { useTemplateStore } from '@/stores/template'
 import type { Template } from '@/types'
 import EButton from '@/components/EButton.vue'
+import EPage from '@/components/EPage.vue'
 
 const router = useRouter()
 const { update, all } = useTemplateStore()
@@ -35,9 +36,6 @@ function handleBlur(index: number) {
 function handleAdd() {
   if (!template.value) return
   template.value.options.push('')
-  nextTick(() => {
-
-  })
 }
 
 function handleNew(input: InstanceType<typeof EInput>) {
@@ -46,26 +44,31 @@ function handleNew(input: InstanceType<typeof EInput>) {
 
 function handleSave() {
   if (!template.value) return
-  if (template.value.name === '') return uni.showToast({ icon: 'error', title: '模板名称不能为空' })
-  if (template.value.options.length === 0) return uni.showToast({ icon: 'error', title: '模板选项不能为空' })
+  if (template.value.name === '') return uni.showToast({ icon: 'error', title: '模板名称为空' })
+  if (template.value.options.length === 0) return uni.showToast({ icon: 'error', title: '模板选项为空' })
   update(template.value)
-  uni.showToast({ title: '保存成功' })
-  router.back()
+  router.back(() => {
+    uni.showToast({ title: '保存成功' })
+  })
 }
 </script>
 
 <template>
-  <view page p-sm>
-    <view v-if="template" flex="~ col gap-2xl">
+  <EPage>
+    <template #title>
+      编辑模板
+    </template>
+
+    <view v-if="template" flex="1 ~ col gap-2xl" p-sm overflow-auto>
       <view flex="~ col gap-2">
-        <view text="gray-500/50">
+        <view text="white/60">
           模板名称
         </view>
         <EInput v-model="template.name" />
       </view>
 
       <view flex="~ col gap-2">
-        <view text="gray-500/50">
+        <view text="white/60">
           选项
         </view>
 
@@ -88,15 +91,15 @@ function handleSave() {
           增加选项
         </EButton>
       </view>
-
-      <view flex="~ col gap-sm">
-        <EButton @click="initData">
-          重置更改
-        </EButton>
-        <EButton @click="handleSave">
-          保存模板
-        </EButton>
-      </view>
     </view>
-  </view>
+
+    <view shadow-sm pt-sm px-sm flex="~ col shrink-0 gap-sm">
+      <EButton @click="initData">
+        重置更改
+      </EButton>
+      <EButton @click="handleSave">
+        保存模板
+      </EButton>
+    </view>
+  </EPage>
 </template>

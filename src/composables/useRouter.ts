@@ -28,8 +28,13 @@ export default function useRouter() {
     })
   }
 
-  function back() {
-    uni.navigateBack()
+  function back(callback?: () => void) {
+    uni.navigateBack({
+      fail() {
+        uni.redirectTo({ url: '/pages/index/index' })
+      },
+      complete: callback,
+    })
   }
 
   onLoad((query) => {

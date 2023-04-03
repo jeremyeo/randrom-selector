@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useTurntable } from '@/composables/useTurntable'
 import EButton from '@/components/EButton.vue'
 import ECard from '@/components/ECard.vue'
 import useColors from '@/composables/useColors'
 import { useTemplateStore } from '@/stores/template'
-import useCustomNav from '@/composables/useCustomNav'
 import useAnimate from '@/composables/useAnimate'
 import useRouter from '@/composables/useRouter'
 import { darkenColor } from '@/utils/gencolors'
+import EHeader from '@/components/EHeader.vue'
 
-const result = ref(-1)
 const router = useRouter()
 const template = useTemplateStore()
 
@@ -22,21 +21,22 @@ const { turntable, onInit } = useTurntable('canvas')
 onInit(redraw)
 watch(() => template.options, redraw)
 
-const { statusHeight, buttonHeight, buttonInfo } = useCustomNav()
-const { resultText, currentColor, darkenedColor, boxShadow, updateColors } = useColors(turntable, result)
+const { current, resultText, currentColor, darkenedColor, updateColors } = useColors(turntable)
 const { state, animate, handleAnimationend } = useAnimate()
 
 async function start() {
   if (template.options.length === 0) return uni.showToast({ icon: 'error', title: '请先创建模板～' })
   if (state.value === 'running') return
   state.value = 'running'
-  result.value = await turntable.value.start()
+  current.value = await turntable.value.start()
   state.value = 'ended'
 }
 
 function redraw() {
   turntable.value.setOptions(template.options)
+  updateColors()
   turntable.value.draw()
+  current.value = -1
 }
 
 function changeTemplate() {
@@ -47,27 +47,18 @@ function changeTemplate() {
 <template>
   <view
     page h-full transition-all-750 ease-in flex="~ col"
+    bg-red
     :style="{ backgroundColor: darkenedColor }"
   >
-    <view :style="{ height: statusHeight }" />
-    <view
-      transition-all-750 ease-in
-      text="center white" truncate
-      :style="{
-        height: buttonHeight,
-        lineHeight: buttonHeight,
-        padding: `0 calc(100% - ${buttonInfo.left}px)`,
-        color: currentColor ?? 'rgba(255,255,255,0.8)',
-      }"
-    >
+    <EHeader flex-shrink-0>
       {{ title }}
-    </view>
+    </EHeader>
     <canvas id="canvas" flex-1 w-full type="2d" />
-    <ECard flex-shrink-0 mx-xl :box-shadow="boxShadow" :border-color="currentColor ? darkenColor(currentColor, 10) : '#333'">
+    <ECard flex-shrink-0 mx-xl :border-color="darkenColor(currentColor, 10) ?? '#333'">
       <view
-        text="white/10 center" :class="animate"
+        text="white/80 center" :class="animate"
         transition-all-750 ease-in text-xl mb-md font-bold
-        :style="{ color: currentColor ?? 'white' }"
+        :style="{ color: currentColor }"
         @animationend="e => handleAnimationend(e as any)"
       >
         {{ resultText }}

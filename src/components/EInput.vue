@@ -25,7 +25,7 @@ defineExpose({
 </script>
 
 <template>
-  <view border="~ 1rpx solid gray-500/50" flex="~" rd-md>
+  <view border="~ 1rpx solid black/25" flex="~" rd-md>
     <input
       flex-1 p-2
       type="text"
