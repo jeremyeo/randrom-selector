@@ -28,6 +28,7 @@ const { state, animate, handleAnimationend } = useAnimate()
 
 async function start() {
   if (template.options.length === 0) return uni.showToast({ icon: 'error', title: '请先创建模板～' })
+  if (state.value === 'running') return
   state.value = 'running'
   result.value = await turntable.value.start()
   state.value = 'ended'
