@@ -41,7 +41,7 @@ onShow(() => {
       </EHeader>
       <view flex-1 px-sm py-sm overflow-auto flex="~ col gap-2">
         <ECard
-          v-for="temp in template.all.concat(template.all).concat(template.all).concat(template.all).concat(template.all).concat(template.all)" :key="temp.id"
+          v-for="temp in template.all" :key="temp.id"
           :hidden-shadow="true"
           @click="mode === 'edit' ? editTemplate(temp.id) : template.select(temp.id)"
         >
