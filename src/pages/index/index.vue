@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, watch } from 'vue'
+import { onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app'
 import { useTurntable } from '@/composables/useTurntable'
 import EButton from '@/components/EButton.vue'
 import ECard from '@/components/ECard.vue'
@@ -42,6 +43,14 @@ function redraw() {
 function changeTemplate() {
   router.push('/template/index')
 }
+
+onShareAppMessage(() => ({}))
+
+onShareTimeline(() => {
+  return {
+    title: '决定转盘',
+  }
+})
 </script>
 
 <template>
