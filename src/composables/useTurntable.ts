@@ -1,5 +1,5 @@
 import { getCurrentInstance, shallowRef } from 'vue'
-import { onReady } from '@dcloudio/uni-app'
+import { onReady, onUnload } from '@dcloudio/uni-app'
 import type { ShallowRef } from 'vue'
 import { Turntable } from '@/modules/turntable'
 
@@ -7,6 +7,10 @@ const turntable = shallowRef<Turntable>()
 
 export function useTurntable(id?: string) {
   const subscribers = new Set<() => void>()
+
+  onUnload(() => {
+    turntable.value = undefined
+  })
   turntable.value
     ? notify()
     : onReady(() => {
