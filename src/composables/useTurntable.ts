@@ -8,9 +8,10 @@ const turntable = shallowRef<Turntable>()
 export function useTurntable(id?: string) {
   const subscribers = new Set<() => void>()
 
-  onUnload(() => {
+  id && onUnload(() => {
     turntable.value = undefined
   })
+
   turntable.value
     ? notify()
     : onReady(() => {

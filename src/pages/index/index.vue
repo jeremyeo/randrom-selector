@@ -35,7 +35,8 @@ async function start() {
 
 function redraw() {
   turntable.value.setOptions(template.options)
-  if (turntable.value.colors.length === 0) updateColors()
+  if (template.options.length === 0) return turntable.value.clearCanvas()
+  if (turntable.value.colors.length !== template.options.length) updateColors()
   turntable.value.draw()
   current.value = -1
 }

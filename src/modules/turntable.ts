@@ -89,7 +89,7 @@ export class Turntable {
     return index
   }
 
-  private clearCanvas() {
+  clearCanvas() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 

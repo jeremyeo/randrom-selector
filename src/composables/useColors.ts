@@ -15,6 +15,7 @@ export default function useColors(
   const darkenedColor = computed(() => currentColor.value ? darkenColor(currentColor.value, 30) : '')
 
   function updateColors() {
+    if (template.options.length === 0) return uni.showToast({ icon: 'error', title: '请先创建模板～' })
     turntable.value.updateColors()
     turntable.value.draw()
     const now = current.value

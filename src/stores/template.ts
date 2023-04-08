@@ -53,6 +53,14 @@ export const useTemplateStore = defineStore('template', () => {
     id.value = templateId
   }
 
+  function remove(templateId: number) {
+    const index = all.value.findIndex(template => template.id === templateId)
+    if (index === -1) return
+    all.value.splice(index, 1)
+
+    if (all.value.length > 0 && id.value === templateId) id.value = all.value[0].id
+  }
+
   function clearEmpty() {
     all.value = all.value.filter(template => template.name !== '' && template.options.length > 0)
   }
@@ -66,5 +74,6 @@ export const useTemplateStore = defineStore('template', () => {
     update,
     select,
     clearEmpty,
+    remove,
   }
 })
